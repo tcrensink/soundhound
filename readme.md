@@ -11,7 +11,7 @@
 - scikit-learn
 - python 3.6
 
-# Run `./driver`
+# Run ./driver
 **If requirements are satisfied:**: navigate to folder containing driver and run `./driver text_samples/article_18795`
 **If requirements are not satisfied:** run `setup.sh` to create a conda env with dependencies from environment.yml.  Instructions will be printed to terminal to activate the environment and run `./driver text_samples/article_18795`
 
