@@ -31,7 +31,7 @@ You can select any input document/article for the same, and your submission shou
 
 4. If you feel you understand what is taking place in step two (2), you are welcome to adjust the elimination ratios and experiment empirically to find a “better” means of terms elimination. This way you should be able to find the gist of the article or text.
 
-5 (optional). Can you extend the functionality to allow terms to be either 1 or 2 words (instead of assuming every term is 1 word)? You should avoid including in your output any ‘overlapping’ terms (e.g. don’t include “Donald Trump”, “Donald”, and “Trump”).
+5. (optional). Can you extend the functionality to allow terms to be either 1 or 2 words (instead of assuming every term is 1 word)? You should avoid including in your output any ‘overlapping’ terms (e.g. don’t include “Donald Trump”, “Donald”, and “Trump”).
 
 You can make assumptions (make sure to mention them), and generate a sample input file by yourself to work on the same.
 
@@ -41,8 +41,8 @@ You can make assumptions (make sure to mention them), and generate a sample inpu
 - Feel free to use any library, nltk or sci-kit, or any frameworks.
 - That means, your submission would comprise of the sample article (\*.txt file or files) you chose as the input to your program. List any assumptions you made or your approach in a readme.txt file which would illustrate high level steps you did to solve this problem)
 
-# General Comments on method
-The solution uses sklearn and pandas (NLTK could also have been used), using essentially uses a (simplified) 'bag of words' model.  Sklearn.feature_extraction.text.CountVectorizer tokenizes the text file and creates a frequency table using the default regex pattern `(?u)\b\w\w+\b`; this excludes single character strings and treats punctuation as separators.  Several "solutions" are included.  The code has been test on short documents and has not been performance optimized for very long documents.
+# General comments on solutions
+The solution uses sklearn and pandas (NLTK could also have been used), using essentially uses a (simplified) 'bag of words' model.  Sklearn.feature_extraction.text.CountVectorizer tokenizes the text file and creates a frequency table using the default regex pattern `(?u)\b\w\w+\b`; this excludes single character strings and treats punctuation as separators.  Several "solutions" are included.  The code has been tested on short documents and has not been performance optimized for very long documents.
 
 # Basic solution to problem description parts 1, 2 ,3:
 - Terms are sorted by frequency, and subsorted alphabetically.  This is a niave and undesirable for "flat" distributions (short documents have long tails with words of equal count, e.g. n=1).  This is improved in subsequent solutions.  Other bits:
