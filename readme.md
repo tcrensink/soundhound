@@ -12,8 +12,8 @@
 - python 3.6
 
 # Run `./driver`
-**If requirements are met:**: navigate to folder containing driver and run `./driver text_samples/article_18795`
-**If requirements are not met:** run `setup.sh` to create a conda env with dependencies from environment.yml.  Instructions will be printed to terminal to activate the environment and run `./driver text_samples/article_18795`
+**If requirements are satisfied:**: navigate to folder containing driver and run `./driver text_samples/article_18795`
+**If requirements are not satisfied:** run `setup.sh` to create a conda env with dependencies from environment.yml.  Instructions will be printed to terminal to activate the environment and run `./driver text_samples/article_18795`
 
 # Problem description (skip to next section)
 You can select any input document/article for the same, and your submission should include the input file, code, and a readme file which can describe your process.
@@ -44,8 +44,7 @@ You can make assumptions (make sure to mention them), and generate a sample inpu
 # General Comments on method
 The solution uses sklearn and pandas (NLTK could also have been used), using essentially uses a (simplified) 'bag of words' model.  Sklearn.feature_extraction.text.CountVectorizer tokenizes the text file and creates a frequency table using the default regex pattern `(?u)\b\w\w+\b`; this excludes single character strings and treats punctuation as separators.  Several "solutions" are included.  The code has been test on short documents and has not been performance optimized for very long documents.
 
-# Basic solution, to problem description parts 1, 2 ,3:
-(press k, performTermExtraction):  
+# Basic solution to problem description parts 1, 2 ,3:
 - Terms are sorted by frequency, and subsorted alphabetically.  This is a niave and undesirable for "flat" distributions (short documents have long tails with words of equal count, e.g. n=1).  This is improved in subsequent solutions.  Other bits:
 - No stop words are removed to adhere closely to challenge guidelines
 - Keywords are selected according to the rule: "remove the most frequent term, remove least two frequent terms; repeat until seven or fewer terms remain."  The algorithm is implemented with divmod for efficiency.
