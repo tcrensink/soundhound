@@ -1,0 +1,214 @@
+#!/usr/bin/env python3
+import sys
+from sklearn.feature_extraction.text import CountVectorizer
+import pandas as pd
+import os
+from pathlib import Path
+from collections import OrderedDict
+import numpy as np
+
+class TextData(object):
+    """
+    text data contains text data (input file)
+    """
+    def __init__(self, txt_path='./text_samples/article_18795'):
+
+        self.path = txt_path
+        with open(self.path, 'r') as f:
+            self.text = [f.read()]
+
+        self.unigrams = self.create_count_dict()
+        self.unigrams_stopped = self.create_count_dict(stop_words='english')
+        self.bigrams_stopped = self.create_count_dict(nmin=1, nmax=2, stop_words='english')
+
+        self.df1 = self.return_df(self.unigrams)
+        self.df1_stopped = self.return_df(self.unigrams_stopped)
+
+        df2_stopped = self.return_df(self.bigrams_stopped)
+
+        self.df2_stopped = self._clean_bigrams(df2_stopped)
+
+        self.df_english = self._return_english_corpus_df()
+
+    def subsort_by_corpus_frequency(self, df):
+        """
+        subsort document terms of equal count values by (a much larger) frequency table in the english a language.
+        """
+        df = pd.merge(df, self.df_english, how='left', on=['term'])
+        df.columns = ['term', 'count', 'freq', 'corp count', 'corp freq']
+        df.sort_values(by=['count', 'corp count'], ascending=False, inplace=True)
+        df = df.reset_index(drop=True)
+        return df
+
+    def return_df(self, ngram_dict):
+        """
+        creates pandas dataframe to hold frequency data.
+        """
+        df = pd.DataFrame(list(ngram_dict.items()), columns=['term', 'count'])
+        df['freq'] = df['count']/df['count'].sum()
+        return df
+
+    def _clean_bigrams(count_dict1, count_dict2):
+        """
+        removes duplicate words "Donald" and "Trump" or bigram "Donald Trump".  This is somewhat hacky; it should include the conditional probability of the second word appearing after the first.
+        """
+        pass
+        # keep_set = set()
+    #     discard_set = set()
+
+    #     for k, v in count_dict.items():
+    #         words = set{}
+    #         print(k)
+
+
+    #     print('hi')
+    #         k_set = set(k.split(' '))
+    #         if k_set.isdisjoint(keep_set):
+    #             keep_set.update(k_set)
+    #         else:
+    #             discard_set.add(k)
+    #     for k in discard_set:
+    #         count_dict.pop(k, None)
+    #     return count_dict
+
+    def create_count_dict(self, nmin=1, nmax=1, stop_words=None):
+        """
+        creates/updates frequency dict, based on ngram numbers
+        """
+        cv = CountVectorizer(ngram_range=(nmin, nmax), min_df=1, stop_words=stop_words)
+        cv_fit = cv.fit_transform(self.text)
+        terms = cv.get_feature_names()
+        counts = cv_fit.toarray().reshape(-1).T
+        count_dict = OrderedDict(sorted(zip(terms, counts), key=lambda q: q[1], reverse=True))
+
+        return count_dict
+
+    def performTermExtraction(self, df, inc1, inc2):
+        """
+        naive term extraction, that removes words from freq. vector: inc1 most freq., then inc2 least until 7 or fewer keywords remain.
+        """
+        i1, i2 = self._keyword_inds(len(df), inc1, inc2)
+        return df.iloc[i1:i2]
+
+    def _keyword_inds(self, N, inc1, inc2):
+        """
+        a faster implementation of rule:
+        ind1 = 0, ind2 = N
+        while ind2 - ind1 > 7:
+            ind1 += inc1
+            ind2 -= inc2
+        """
+        if N < 7:
+            return 0, N
+
+        n1 = inc1 + inc2
+        n2 = 7 - n1 + 1
+        (n, rem) = divmod(N - n2, n1)
+        num_terms = n2 + rem%n1
+        i1 = n*inc1
+        i2 = i1 + num_terms        
+        if i2 - i1 < 3:
+            i2 = i1 + 7
+            print('\nnote: values not given by increment rule in problem definition.\n')
+        return i1, i2
+
+    def _return_english_corpus_df(self):
+        """
+        constructs general usage english freq. table.  Data from here: http://norvig.com/ngrams/
+        """
+        df_corpus = pd.read_table('./utils/english_corpus_counts.txt', sep='\t', header=None)
+        df_corpus.columns = ['term', 'count']
+        N = np.sum(df_corpus['count'])
+        df_corpus['freq'] = df_corpus['count']/N
+        return df_corpus
+
+
+if __name__ == '__main__':
+
+    cmd_args = sys.argv
+    try:
+        file_path = cmd_args[1]
+        if not Path(file_path).is_file():
+            file_path = './text_samples/article_18795'
+
+    except IndexError:
+        print('no file specified; using ./text_samples/article_18795')
+        file_path = './text_samples/article_18795'
+
+    except FileNotFoundError:
+        print('file not found; using ./text_samples/article_18795')
+        file_path = './text_samples/article_18795'
+    
+    text_data = TextData(file_path)
+    query_str = "\nenter a key:" +\
+                "\n1 -> soln 1: naive soln, as specified in problem" +\
+                "\n2 -> soln 2: terms subsorted by external corpus freq., adjusted increment vals" +\
+                "\n3 -> soln 3: ~top results by score (doc freq)/(corpus freq)" +\
+                "\nt -> print document text" +\
+                "\nr -> print readme" +\
+                "\nq -> quit\n\n"
+
+    while True:
+
+        ans = input(query_str)
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        if ans == '1':
+
+            inc1 = 1
+            inc2 = 2
+            df = text_data.df1
+            data =text_data.performTermExtraction(df, inc1, inc2)
+            print('terms sorted by frequency:\n{}'.format(df))
+            print('\nkeywords, incremented by {}, {}:\n{}'.format(inc1, inc2, data))
+
+        if ans == '2':
+
+            inc1 = 1
+            inc2 = 5
+            df = text_data.subsort_by_corpus_frequency(text_data.df1_stopped)
+            
+            data = text_data.performTermExtraction(df, inc1, inc2)
+            print('terms sorted by frequency:\n{}'.format(df))
+            print('\nkeywords incrementing by {}, {}:\n{}'.format(inc1, inc2, data))
+
+        if ans == '3':
+
+            inc1 = 1
+            inc2 = 35
+            df = text_data.subsort_by_corpus_frequency(text_data.df1_stopped)
+            df['score'] = df['freq']**2/df['corp freq']
+            df.sort_values(by=['score'], ascending=False, inplace=True)
+
+            data = text_data.performTermExtraction(df, inc1, inc2)
+            # data = df.iloc[0:7]
+            print('terms sorted by frequency:\n{}'.format(df))
+            print('\ntop keywords by score value:\n{}'.format(data))
+
+        # if ans == '4':
+
+        #     inc1 = 1
+        #     inc2 = 35
+        #     df = text_data.subsort_by_corpus_frequency(text_data.df2_stopped)
+        #     df['score'] = df['freq']**2/df['corp freq']
+        #     df.sort_values(by=['score'], ascending=False, inplace=True)
+
+        #     data = text_data.performTermExtraction(df, inc1, inc2)
+        #     # data = df.iloc[0:7]
+        #     print('terms sorted by frequency:\n{}'.format(df))
+        #     print('\ntop keywords by score value:\n{}'.format(data))
+
+        if ans.lower() == 't':
+            print(text_data.text)
+
+        if ans.lower() == 'r':
+            with open('./readme.md') as f:
+                print(f.read())
+
+        if ans.lower() == 'q':
+            sys.stdout.write('program completed.\n')
+            break
+
+
+
+

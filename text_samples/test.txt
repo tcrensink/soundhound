@@ -1,0 +1,13 @@
+one 1 two 2 three 3 four 4 
+star* exclam! question? colon: slash/ bslash\ period. 
+star * exclam ! question ? colon : slash / bslash \ period . 
+A B C D E
+a b c d e
+ab bc cd de
+0 1 2 3
+
+bigram one bigram one bigram one
+bigram a two bigram b two bigram!two
+bigram 3! bigram 3! bigram 3!
+
+big time. big time 

@@ -1,0 +1,36 @@
+name: soundhound
+channels:
+  - vgauthier
+  - conda-forge
+  - defaults
+  - ostrokach
+dependencies:
+  - ca-certificates=2018.4.16=0
+  - certifi=2018.4.16=py36_0
+  - libgfortran=3.0.0=0
+  - ncurses=5.9=10
+  - openblas=0.2.20=7
+  - openssl=1.0.2o=0
+  - pandas=0.23.0=py36_1
+  - pip=9.0.3=py36_0
+  - python=3.6.5=1
+  - python-dateutil=2.7.3=py_0
+  - pytz=2018.4=py_0
+  - readline=7.0=0
+  - setuptools=39.2.0=py36_0
+  - six=1.11.0=py36_1
+  - sqlite=3.20.1=2
+  - tk=8.6.7=0
+  - wheel=0.31.0=py36_0
+  - xz=5.2.3=0
+  - zlib=1.2.11=0
+  - blas=1.0=mkl
+  - intel-openmp=2018.0.0=8
+  - mkl=2017.0.4=h1fae6ae_0
+  - numpy=1.13.1=py36_0
+  - scikit-learn=0.19.0=np113py36_0
+  - scipy=0.19.1=np113py36_0
+  - pip:
+    - ethereum==2.1.0
+prefix: /Users/trensink/anaconda3/envs/soundhound
+
